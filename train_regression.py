@@ -20,27 +20,37 @@ class AnalyticalLinearRegression:
        self.weights = None
    
    def fit(self, X, y):
-       """Compute weights using normal equation.
-       
-       Args:
-           X (np.ndarray): Training features of shape (n_samples, n_features)
-           y (np.ndarray): Target values of shape (n_samples, n_outputs)
-           
-       Returns:
-           bool: True if successful, False if matrix is singular
-       """
-       pass
+        """Compute weights using normal equation.
+        
+        Args:
+            X (np.ndarray): Training features of shape (n_samples, n_features)
+            y (np.ndarray): Target values of shape (n_samples, n_outputs)
+            
+        Returns:
+            bool: True if successful, False if matrix is singular
+        """
+        X_b = np.c_[np.ones((X.shape[0], 1)), X]
+        try:
+            self.weights = np.linalg.inv(X_b.T.dot(X_b)).dot(X_b.T).dot(y)
+            return True
+        except np.linalg.LinAlgError:
+            print("Matrix is singular")
+            return False
        
    def predict(self, X):
-       """Make predictions for given input features.
-       
-       Args:
-           X (np.ndarray): Input features of shape (n_samples, n_features)
-           
-       Returns:
-           np.ndarray: Predicted values of shape (n_samples, n_outputs) 
-       """
-       pass
+        """Make predictions for given input features.
+        
+        Args:
+            X (np.ndarray): Input features of shape (n_samples, n_features)
+            
+        Returns:
+            np.ndarray: Predicted values of shape (n_samples, n_outputs) 
+        """
+        if self.weights is None:
+            raise ValueError("Model has not been trained")
+        
+        X_b = np.c_[np.ones((X.shape[0], 1)), X]
+        return X_b.dot(self.weights)
 
 
 if __name__ == "__main__":
