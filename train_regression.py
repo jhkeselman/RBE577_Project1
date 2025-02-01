@@ -15,6 +15,9 @@ class AnalyticalLinearRegression:
        >>> if success:
        >>>     y_pred = model.predict(X_test)
    """
+
+   def __init__(self):
+       self.weights = None
    
    def fit(self, X, y):
        """Compute weights using normal equation.

@@ -1,3 +1,5 @@
+import numpy as np
+
 def compute_mse(predictions, targets):
    """Compute Mean Squared Error between predictions and targets.
    
@@ -8,7 +10,7 @@ def compute_mse(predictions, targets):
    Returns:
        float: MSE value
    """
-   pass
+   return np.mean((predictions - targets) ** 2)
 
 def compute_rmse(predictions, targets): 
    """Compute Root Mean Squared Error between predictions and targets.
@@ -20,7 +22,7 @@ def compute_rmse(predictions, targets):
    Returns:
        float: RMSE value
    """
-   pass
+   return np.sqrt(compute_mse(predictions, targets))
 
 def compute_mae(predictions, targets):
    """Compute Mean Absolute Error between predictions and targets.
@@ -32,7 +34,7 @@ def compute_mae(predictions, targets):
    Returns:
        float: MAE value
    """
-   pass
+   return np.mean(np.abs(predictions - targets))
 
 def compute_position_error(predictions, targets):
    """Compute mean Euclidean error for position predictions (x,y,z).
@@ -44,7 +46,9 @@ def compute_position_error(predictions, targets):
    Returns:
        float: Mean position error
    """
-   pass
+   pred_pos = predictions[:, :3]
+   target_pos = targets[:, :3]
+   return np.mean(np.linalg.norm(pred_pos - target_pos, axis=1))
 
 def compute_rotation_error(predictions, targets):
    """Compute mean Euclidean error for rotation predictions (rx,ry,rz).
@@ -56,4 +60,6 @@ def compute_rotation_error(predictions, targets):
    Returns:
        float: Mean rotation error
    """
-   pass
+   pred_rot = predictions[:, 3:]
+   target_rot = targets[:, 3:]
+   return np.mean(np.linalg.norm(pred_rot - target_rot, axis=1))

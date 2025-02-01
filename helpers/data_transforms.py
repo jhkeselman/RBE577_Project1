@@ -1,3 +1,5 @@
+import numpy as np
+
 class StandardScaler:
     """Scales features using standardization: (x - mean) / std.
     
@@ -16,6 +18,10 @@ class StandardScaler:
         X_train_scaled = scaler.transform(X_train)
         X_test_scaled = scaler.transform(X_test)
     """
+
+    def __init__(self):
+        self.mean = None
+        self.std = None
     
     def fit(self, data):
         """Compute mean and standard deviation of features for scaling.
@@ -23,7 +29,10 @@ class StandardScaler:
         Args:
             data (np.ndarray): Input features of shape (n_samples, n_features)
         """
-        pass
+        self.mean = np.mean(data, axis=0)
+        self.std = np.std(data, axis=0)
+
+        self.std[self.std == 0] = 1.0  # Avoid division by zero
     
     def transform(self, data):
         """Scale features by removing mean and scaling to unit variance.
@@ -34,7 +43,9 @@ class StandardScaler:
         Returns:
             np.ndarray: Scaled features
         """
-        pass
+        if self.mean is None or self.std is None:
+            raise ValueError("Scaler parameters not initialized. Call fit() first.")
+        return (data - self.mean) / self.std
     
     def inverse_transform(self, data):
         """Convert scaled features back to original scale.
@@ -45,7 +56,9 @@ class StandardScaler:
         Returns:
             np.ndarray: Features in original scale
         """
-        pass
+        if self.mean is None or self.std is None:
+            raise ValueError("Scaler parameters not initialized. Call fit() first.")
+        return data * self.std + self.mean
 
 def convert_to_tensor(data, device="cpu"):
     """Convert numpy array or list to PyTorch tensor.
