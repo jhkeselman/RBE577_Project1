@@ -18,6 +18,10 @@ class SGDLinearRegression:
        >>> model.fit(X_train, y_train, batch_size=32, epochs=100)
        >>> y_pred = model.predict(X_test)
    """
+   def __init__(self, learning_rate=0.01):
+        self.weights = None
+        self.bias = None
+        self.lr = learning_rate
    
    def _initialize_parameters(self, input_dim, output_dim):
        """Initialize model weights and bias.
@@ -26,7 +30,8 @@ class SGDLinearRegression:
            input_dim (int): Number of input features
            output_dim (int): Number of output dimensions
        """
-       pass
+       self.weights = np.random.randn(input_dim, output_dim) * 0.01
+       self.bias = np.zeros((1, output_dim))
        
    def _compute_loss(self, y_pred, y_true):
        """Compute MSE loss between predictions and targets.
@@ -38,7 +43,7 @@ class SGDLinearRegression:
        Returns:
            float: MSE loss value
        """
-       pass
+       return compute_mse(y_pred, y_true)
        
    def _compute_gradients(self, X, y_true, y_pred):
        """Compute gradients for weights and bias.
@@ -51,7 +56,12 @@ class SGDLinearRegression:
        Returns:
            tuple: Weight gradients and bias gradients
        """
-       pass
+       n_samples = X.shape[0]
+
+       dw = (2/n_samples) * X.T.dot(y_pred - y_true)
+       db = (2/n_samples) * np.sum(y_pred - y_true, axis=0, keepdims=True)
+
+       return dw, db
        
    def fit(self, X, y, batch_size=32, epochs=100):
        """Train model using mini-batch SGD.
@@ -62,7 +72,24 @@ class SGDLinearRegression:
            batch_size (int): Mini-batch size for SGD
            epochs (int): Number of training epochs
        """
-       pass
+       n_samples, n_features = X.shape
+       n_outputs = y.shape[1]
+
+       self._initialize_parameters(n_features, n_outputs)
+       for epoch in range(epochs):
+           indices = np.random.permutation(n_samples)
+           X_shuffled, y_shuffled = X[indices], y[indices]
+           for i in range(0, n_samples, batch_size):
+               X_batch, y_batch = X_shuffled[i:i+batch_size], y_shuffled[i:i+batch_size]
+               y_pred = self.predict(X_batch)
+
+               dw, db = self._compute_gradients(X_batch, y_batch, y_pred)
+
+               self.weights -= self.lr * dw
+               self.bias -= self.lr * db
+        
+    #    train_loss = self._compute_loss(self.predict(X), y)
+    #    print(f"Train Loss: {train_loss:.4f}")
        
    def predict(self, X):
        """Make predictions for given input features.
@@ -73,7 +100,7 @@ class SGDLinearRegression:
        Returns:
            np.ndarray: Predicted values of shape (n_samples, n_outputs)
        """
-       pass
+       return X.dot(self.weights) + self.bias
 
 
 if __name__ == "__main__":
@@ -81,7 +108,7 @@ if __name__ == "__main__":
 
     # Load data
     X_train, X_test, y_train, y_test = prepare_dataset(
-        "robot_kinematics_normalized_dataset.csv"
+        "ur10dataset.csv"
     )
 
     # Convert to numpy

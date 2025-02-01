@@ -62,7 +62,7 @@ if __name__ == "__main__":
     )
 
     # Convert to numpy and take subset due to memory constraints
-    subset_size = 10000
+    subset_size = 100000
     X_train = X_train.values[:subset_size]
     y_train = y_train.values[:subset_size]
     X_test = X_test.values
