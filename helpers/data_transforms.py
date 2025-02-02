@@ -1,3 +1,4 @@
+import torch
 import numpy as np
 
 class StandardScaler:
@@ -73,4 +74,8 @@ def convert_to_tensor(data, device="cpu"):
     Example:
         X_tensor = convert_to_tensor(X_numpy, device='cuda')
     """
-    pass
+    if isinstance(data, list):
+        data = np.array(data)
+    if not isinstance(data, np.ndarray):
+        raise ValueError("Input data must be a numpy array or list.")
+    return torch.tensor(data, dtype=torch.float32, device=device)
