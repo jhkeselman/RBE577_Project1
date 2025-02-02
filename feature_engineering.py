@@ -68,6 +68,7 @@ if __name__ == "__main__":
    from datasets import prepare_dataset
    from helpers.metrics import compute_mse, compute_position_error, compute_rotation_error
    from train_regression import AnalyticalLinearRegression
+   from train_linear_regression import SGDLinearRegression
 
    X_train_raw, X_test_raw, y_train, y_test = prepare_dataset("ur10dataset.csv")
    X_train_raw = X_train_raw.values
@@ -78,21 +79,39 @@ if __name__ == "__main__":
    X_train_eng = engineer_features(X_train_raw)
    X_test_eng = engineer_features(X_test_raw)
 
-   model_raw = AnalyticalLinearRegression()
-   model_raw.fit(X_train_raw, Y_train)
-   Y_pred_raw = model_raw.predict(X_test_raw)
+   analytical_model_raw = AnalyticalLinearRegression()
+   analytical_model_raw.fit(X_train_raw, Y_train)
+   analytical_Y_pred_raw = analytical_model_raw.predict(X_test_raw)
 
-   model_eng = AnalyticalLinearRegression()
-   model_eng.fit(X_train_eng, Y_train)
-   Y_pred_eng = model_eng.predict(X_test_eng)
+   analytical_model_eng = AnalyticalLinearRegression()
+   analytical_model_eng.fit(X_train_eng, Y_train)
+   analytical_Y_pred_eng = analytical_model_eng.predict(X_test_eng)
+
+   sgd_model_raw = SGDLinearRegression(learning_rate=0.01)
+   sgd_model_raw.fit(X_train_raw, Y_train, batch_size=32, epochs=100)
+   sgd_Y_pred_raw = sgd_model_raw.predict(X_test_raw)
+
+   sgd_model_eng = SGDLinearRegression(learning_rate=0.01)
+   sgd_model_eng.fit(X_train_eng, Y_train, batch_size=32, epochs=100)
+   sgd_Y_pred_eng = sgd_model_eng.predict(X_test_eng)
 
    print("Performance with Raw Angles:")
-   print(f"Test MSE: {compute_mse(Y_pred_raw, y_test):.4f}")
-   print(f"Position Error: {compute_position_error(Y_pred_raw, Y_test):.4f}")
-   print(f"Rotation Error: {compute_rotation_error(Y_pred_raw, Y_test):.4f}")
+   print(f"Test MSE: {compute_mse(analytical_Y_pred_raw, Y_test):.4f}")
+   print(f"Position Error: {compute_position_error(analytical_Y_pred_raw, Y_test):.4f}")
+   print(f"Rotation Error: {compute_rotation_error(analytical_Y_pred_raw, Y_test):.4f}")
 
    print("\nPerformance with Engineered Features:")
-   print(f"Test MSE: {compute_mse(Y_pred_eng, y_test):.4f}")
-   print(f"Position Error: {compute_position_error(Y_pred_eng, Y_test):.4f}")
-   print(f"Rotation Error: {compute_rotation_error(Y_pred_eng, Y_test):.4f}")
+   print(f"Test MSE: {compute_mse(analytical_Y_pred_eng, Y_test):.4f}")
+   print(f"Position Error: {compute_position_error(analytical_Y_pred_eng, Y_test):.4f}")
+   print(f"Rotation Error: {compute_rotation_error(analytical_Y_pred_eng, Y_test):.4f}")
+
+   print("\nPerformance with Raw Angles [SGD]:")
+   print(f"Test MSE: {compute_mse(sgd_Y_pred_raw, Y_test):.4f}")
+   print(f"Position Error: {compute_position_error(sgd_Y_pred_raw, Y_test):.4f}")
+   print(f"Rotation Error: {compute_rotation_error(sgd_Y_pred_raw, Y_test):.4f}")
+
+   print("\nPerformance with Engineered Features [SGD]:")
+   print(f"Test MSE: {compute_mse(sgd_Y_pred_eng, Y_test):.4f}")
+   print(f"Position Error: {compute_position_error(sgd_Y_pred_eng, Y_test):.4f}")
+   print(f"Rotation Error: {compute_rotation_error(sgd_Y_pred_eng, Y_test):.4f}")
     
