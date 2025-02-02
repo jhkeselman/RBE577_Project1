@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+
 class MSELoss(nn.Module):
    """Standard Mean Squared Error loss implementation.
    
@@ -8,6 +11,9 @@ class MSELoss(nn.Module):
        criterion = MSELoss()
        loss = criterion(model_output, target)
    """
+
+   def __init__(self):
+       super(MSELoss, self).__init__()
    
    def forward(self, predictions, targets):
        """Compute MSE loss between predictions and targets.
@@ -19,7 +25,7 @@ class MSELoss(nn.Module):
        Returns:
            torch.Tensor: Scalar MSE loss value
        """
-       pass
+       return torch.mean((predictions - targets) ** 2)
 
 class CustomLoss(nn.Module):
    """Custom loss for robotic pose prediction with separate position and rotation terms.
@@ -35,6 +41,11 @@ class CustomLoss(nn.Module):
        criterion = CustomLoss(position_weight=1.0, rotation_weight=0.5)
        loss = criterion(model_output, target)
    """
+
+   def __init__(self, position_weight=1.0, rotation_weight=0.5):
+         super(CustomLoss, self).__init__()
+         self.position_weight = position_weight
+         self.rotation_weight = rotation_weight
    
    def forward(self, predictions, targets):
        """Compute weighted position and rotation loss.
@@ -47,4 +58,10 @@ class CustomLoss(nn.Module):
        Returns:
            torch.Tensor: Weighted sum of position and rotation MSE losses
        """
-       pass
+       pred_pos, pred_rot = predictions[:, :3], predictions[:, 3:]
+       target_pos, target_rot = targets[:, :3], targets[:, 3:]
+       
+       pos_loss = torch.mean((pred_pos - target_pos) ** 2)
+       rot_loss = torch.mean((pred_rot - target_rot) ** 2)
+
+       return self.position_weight * pos_loss + self.rotation_weight * rot_loss
