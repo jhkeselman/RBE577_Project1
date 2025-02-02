@@ -65,11 +65,14 @@ def train_nn(X_train, X_test, y_train, y_test, hidden_sizes=[128, 64],
    input_scaler = StandardScaler()
    output_scaler = StandardScaler()
    
-   X_train = input_scaler.fit(X_train.values).transform(X_train.values)
-   X_test = input_scaler.transform(X_test.values)
+   input_scaler.fit(X_train)  # Fit the scaler
+   X_train = input_scaler.transform(X_train)  # Then transform the data
 
-   y_train = output_scaler.fit(y_train.values).transform(y_train.values)
-   y_test = output_scaler.transform(y_test.values)
+   output_scaler.fit(y_train)
+   y_train = output_scaler.transform(y_train)
+
+   X_test = input_scaler.transform(X_test)
+   y_test = output_scaler.transform(y_test)
 
    X_train_tensor = convert_to_tensor(X_train, device)
    X_test_tensor = convert_to_tensor(X_test, device)
@@ -96,11 +99,11 @@ def train_nn(X_train, X_test, y_train, y_test, hidden_sizes=[128, 64],
            optimizer.step()
            epoch_loss += loss.item()
 
-    #    model.eval()
-    #    with torch.no_grad():
-    #        test_y_pred = model(X_test_tensor)
-    #        test_loss = criterion(test_y_pred, y_test_tensor).item()
-    #    print(f"Epoch {epoch+1}/{epochs}, Train Loss: {epoch_loss/len(train_loader):.4f}, Test Loss: {test_loss:.4f}")
+       model.eval()
+       with torch.no_grad():
+           test_y_pred = model(X_test_tensor)
+           test_loss = criterion(test_y_pred, y_test_tensor).item()
+       print(f"Epoch {epoch+1}/{epochs}, Train Loss: {epoch_loss/len(train_load):.4f}, Test Loss: {test_loss:.4f}")
    
    return model, input_scaler, output_scaler
 
