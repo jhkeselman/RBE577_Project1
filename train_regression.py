@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from helpers.metrics import compute_mse, compute_position_error, compute_rotation_error
 
 
@@ -32,6 +33,7 @@ class AnalyticalLinearRegression:
         X_b = np.c_[np.ones((X.shape[0], 1)), X]
         try:
             self.weights = np.linalg.inv(X_b.T.dot(X_b)).dot(X_b.T).dot(y)
+            torch.save({"weights": self.weights}, "linear regression analytical.pth")
             return True
         except np.linalg.LinAlgError:
             print("Matrix is singular")
@@ -55,6 +57,7 @@ class AnalyticalLinearRegression:
 
 if __name__ == "__main__":
     from datasets import prepare_dataset
+    import matplotlib.pyplot as plt
 
     # Load data
     X_train, X_test, y_train, y_test = prepare_dataset(

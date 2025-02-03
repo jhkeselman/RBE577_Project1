@@ -105,6 +105,8 @@ def train_nn(X_train, X_test, y_train, y_test, hidden_sizes=[128, 64],
            test_loss = criterion(test_y_pred, y_test_tensor).item()
        print(f"Epoch {epoch+1}/{epochs}, Train Loss: {epoch_loss/len(train_load):.4f}, Test Loss: {test_loss:.4f}")
    
+
+   torch.save(model.state_dict(), "NN.pth")
    return model, input_scaler, output_scaler
 
 if __name__ == "__main__":

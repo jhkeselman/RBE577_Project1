@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from helpers.metrics import compute_mse, compute_position_error, compute_rotation_error
 
 class SGDLinearRegression:
@@ -88,8 +89,10 @@ class SGDLinearRegression:
                self.weights -= self.lr * dw
                self.bias -= self.lr * db
         
-    #    train_loss = self._compute_loss(self.predict(X), y)
-    #    print(f"Train Loss: {train_loss:.4f}")
+           train_loss = self._compute_loss(self.predict(X), y)
+           print(f"Train Loss: {train_loss:.4f}")
+
+       torch.save({"weights": model.weights, "bias": model.bias}, "linear_regression.pth")
        
    def predict(self, X):
        """Make predictions for given input features.
