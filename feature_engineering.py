@@ -9,7 +9,7 @@ def dh_transform(theta, d, a, alpha):
     ])
 
 def forward_kinematics(angles):
-   # UR10 DH parameters from https://www.universal-robots.com/articles/ur/application-installation/dh-parameters-for-calculations-of-kinematics-and-dynamics/
+   # UR10 DH parameters from    
    dh_params = [
         [0.1273, 0, np.pi/2],
         [0, -0.612, 0],
@@ -88,11 +88,11 @@ if __name__ == "__main__":
    analytical_Y_pred_eng = analytical_model_eng.predict(X_test_eng)
 
    sgd_model_raw = SGDLinearRegression(learning_rate=0.0001)
-   sgd_model_raw.fit(X_train_raw, Y_train, batch_size=512, epochs=250)
+   sgd_model_raw.fit(X_train_raw, Y_train, batch_size=256, epochs=250)
    sgd_Y_pred_raw = sgd_model_raw.predict(X_test_raw)
 
    sgd_model_eng = SGDLinearRegression(learning_rate=0.0001)
-   sgd_model_eng.fit(X_train_eng, Y_train, batch_size=512, epochs=250)
+   sgd_model_eng.fit(X_train_eng, Y_train, batch_size=256, epochs=250)
    sgd_Y_pred_eng = sgd_model_eng.predict(X_test_eng)
 
    print("Performance with Raw Angles:")
