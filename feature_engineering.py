@@ -87,12 +87,12 @@ if __name__ == "__main__":
    analytical_model_eng.fit(X_train_eng, Y_train)
    analytical_Y_pred_eng = analytical_model_eng.predict(X_test_eng)
 
-   sgd_model_raw = SGDLinearRegression(learning_rate=0.01)
-   sgd_model_raw.fit(X_train_raw, Y_train, batch_size=32, epochs=100)
+   sgd_model_raw = SGDLinearRegression(learning_rate=0.0001)
+   sgd_model_raw.fit(X_train_raw, Y_train, batch_size=512, epochs=250)
    sgd_Y_pred_raw = sgd_model_raw.predict(X_test_raw)
 
-   sgd_model_eng = SGDLinearRegression(learning_rate=0.01)
-   sgd_model_eng.fit(X_train_eng, Y_train, batch_size=32, epochs=100)
+   sgd_model_eng = SGDLinearRegression(learning_rate=0.0001)
+   sgd_model_eng.fit(X_train_eng, Y_train, batch_size=512, epochs=250)
    sgd_Y_pred_eng = sgd_model_eng.predict(X_test_eng)
 
    print("Performance with Raw Angles:")

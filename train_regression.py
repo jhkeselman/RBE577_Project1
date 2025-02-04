@@ -65,7 +65,7 @@ if __name__ == "__main__":
     )
 
     # Convert to numpy and take subset due to memory constraints
-    subset_size = 100000
+    subset_size = 10000
     X_train = X_train.values[:subset_size]
     y_train = y_train.values[:subset_size]
     X_test = X_test.values
@@ -85,3 +85,35 @@ if __name__ == "__main__":
         print(f"Test MSE: {mse:.4f}")
         print(f"Position Error: {pos_error:.4f}")
         print(f"Rotation Error: {rot_error:.4f}")
+
+
+    # PLOTTING ERROR FOR MULTIPLE SUBSET SIZES
+    # X_test = X_test.values
+    # y_test = y_test.values
+
+    # subset_sizes = [100, 500, 1000, 5000, 10000, 50000, 100000]  # Different training set sizes
+    # train_errors = []
+    # test_errors = []
+
+    # for size in subset_sizes:
+    #     X_train_subset = X_train[:size]
+    #     y_train_subset = y_train[:size]
+
+    #     model = AnalyticalLinearRegression()
+    #     success = model.fit(X_train, y_train)
+
+    #     model.fit(X_train_subset, y_train_subset)
+    #     y_pred_train = model.predict(X_train_subset)
+    #     y_pred_test = model.predict(X_test)
+
+    #     train_errors.append(compute_mse(y_pred_train, y_train_subset))
+    #     test_errors.append(compute_mse(y_pred_test, y_test))
+
+    # # Plot errors
+    # plt.plot(subset_sizes, train_errors, label="Train Error", marker='o')
+    # plt.plot(subset_sizes, test_errors, label="Test Error", marker='s')
+    # plt.xlabel("Training Set Size")
+    # plt.ylabel("MSE")
+    # plt.legend()
+    # plt.title("Train vs Test Error")
+    # plt.show()

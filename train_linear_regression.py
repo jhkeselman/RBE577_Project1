@@ -1,6 +1,7 @@
 import numpy as np
 import torch
-from helpers.metrics import compute_mse, compute_position_error, compute_rotation_error
+from helpers.metrics import compute_mse, compute_rmse, compute_mae, compute_position_error, compute_rotation_error
+import matplotlib.pyplot as plt
 
 class SGDLinearRegression:
    """Linear regression implementation using stochastic gradient descent optimization.
@@ -77,6 +78,13 @@ class SGDLinearRegression:
        n_outputs = y.shape[1]
 
        self._initialize_parameters(n_features, n_outputs)
+       
+       mse_list = []
+       rmse_list = []
+       mae_list = []
+       pos_error_list = []
+       rot_error_list = []
+
        for epoch in range(epochs):
            indices = np.random.permutation(n_samples)
            X_shuffled, y_shuffled = X[indices], y[indices]
@@ -89,8 +97,60 @@ class SGDLinearRegression:
                self.weights -= self.lr * dw
                self.bias -= self.lr * db
         
-           train_loss = self._compute_loss(self.predict(X), y)
-           print(f"Train Loss: {train_loss:.4f}")
+           y_pred_train = self.predict(X)
+           mse = compute_mse(y_pred_train, y)
+           rmse = compute_rmse(y_pred_train, y)
+           mae = compute_mae(y_pred_train, y)
+           pos_error = compute_position_error(y_pred_train, y)
+           rot_error = compute_rotation_error(y_pred_train, y)
+
+           mse_list.append(mse)
+           rmse_list.append(rmse)
+           mae_list.append(mae)
+           pos_error_list.append(pos_error)
+           rot_error_list.append(rot_error)
+
+           print(f"Epoch {epoch+1}/{epochs} | MSE: {mse:.4f} | RMSE: {rmse:.4f} | MAE: {mae:.4f} | Pos Err: {pos_error:.4f} | Rot Err: {rot_error:.4f}")
+
+       plt.figure(figsize=(8, 6))
+       plt.plot(range(1, epochs+1), mse_list, label="MSE", color="b")
+       plt.xlabel("Epochs")
+       plt.ylabel("MSE")
+       plt.title("Mean Squared Error (MSE) Over Time")
+       plt.legend()
+       plt.show()
+
+       plt.figure(figsize=(8, 6))
+       plt.plot(range(1, epochs+1), rmse_list, label="RMSE", color="g")
+       plt.xlabel("Epochs")
+       plt.ylabel("RMSE")
+       plt.title("Root Mean Squared Error (RMSE) Over Time")
+       plt.legend()
+       plt.show()
+
+       plt.figure(figsize=(8, 6))
+       plt.plot(range(1, epochs+1), mae_list, label="MAE", color="r")
+       plt.xlabel("Epochs")
+       plt.ylabel("MAE")
+       plt.title("Mean Absolute Error (MAE) Over Time")
+       plt.legend()
+       plt.show()
+
+       plt.figure(figsize=(8, 6))
+       plt.plot(range(1, epochs+1), pos_error_list, label="Position Error", color="purple")
+       plt.xlabel("Epochs")
+       plt.ylabel("Position Error")
+       plt.title("Position Error Over Time")
+       plt.legend()
+       plt.show()
+
+       plt.figure(figsize=(8, 6))
+       plt.plot(range(1, epochs+1), rot_error_list, label="Rotation Error", color="orange")
+       plt.xlabel("Epochs")
+       plt.ylabel("Rotation Error")
+       plt.title("Rotation Error Over Time")
+       plt.legend()
+       plt.show()
 
        torch.save({"weights": model.weights, "bias": model.bias}, "linear_regression.pth")
        
@@ -121,8 +181,8 @@ if __name__ == "__main__":
     y_test = y_test.values
 
     # Train model
-    model = SGDLinearRegression(learning_rate=0.01)
-    model.fit(X_train, y_train, batch_size=32, epochs=100)
+    model = SGDLinearRegression(learning_rate=0.0001)
+    model.fit(X_train, y_train, batch_size=512, epochs=250)
 
     # Evaluate
     y_pred = model.predict(X_test)
@@ -133,3 +193,14 @@ if __name__ == "__main__":
     print(f"Test MSE: {mse:.4f}")
     print(f"Position Error: {pos_error:.4f}")
     print(f"Rotation Error: {rot_error:.4f}")
+
+    # plt.figure(figsize=(8, 6))
+    # plt.scatter(y_test[:, 0], y_pred[:, 0], alpha=0.5, label="x Prediction")
+    # plt.scatter(y_test[:, 1], y_pred[:, 1], alpha=0.5, label="y Prediction")
+    # plt.scatter(y_test[:, 2], y_pred[:, 2], alpha=0.5, label="z Prediction")
+    # plt.plot([-1, 1], [-1, 1], "--", color="gray")  # Reference diagonal
+    # plt.xlabel("True Values")
+    # plt.ylabel("Predicted Values")
+    # plt.legend()
+    # plt.title("True vs. Predicted End-Effector Positions")
+    # plt.show()
